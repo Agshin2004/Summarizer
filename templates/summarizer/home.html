@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Home {% endblock title %}  
+
+{% block content %}  
+
+    <div id="spinner" style="display:none;">
+        <img src="{% static 'spinner.gif' %}" alt="Loading...">
+    </div>
+
+    <form id="summarizeForm">
+        <input type="text" name="video_id" placeholder="Enter YouTube Video ID">
+        <button type="submit">Summarize</button>
+    </form>
+
+    
+    <div id="summary"></div>
+
+    <script>
+        document.getElementById("summarizeForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            // Show the spinner
+            document.getElementById("spinner").style.display = "block";
+            
+            // NOTE: When the form’s submit event is triggered, this refers to the form element
+            // SO WE CAN'T USE window HERE OR WE NEED TO USE BUTTON'S id OR class
+            this.querySelector('button').disabled = true; 
+
+            const videoId = document.querySelector('input[name="video_id"]').value;
+
+            fetch(`/summarize/${videoId}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    document.querySelector('#summary').innerHTML = data.summary;
+                    document.getElementById("spinner").style.display = "none";
+                    this.querySelector('button').disabled = false;
+
+                })
+
+        });
+    </script>
+{% endblock content %}
